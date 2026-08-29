@@ -1,1 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#02070d">
+<title>FRIDAY // Advanced AI</title>
+<style>
+:root{
+  --bg:#02070d;--panel:rgba(5,17,28,.78);--line:rgba(73,206,235,.28);
+  --cyan:#55e7ff;--cyan2:#9df5ff;--green:#65f2c4;--muted:#6c9aaa;
+}
+*{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{font-family:Arial,Helvetica,sans-serif;background:
+ radial-gradient(circle at 50% 42%,rgba(18,105,139,.18),transparent 30%),
+ radial-gradient(circle at 20% 20%,rgba(24,75,120,.16),transparent 28%),var(--bg);
+ color:#dffaff;letter-spacing:.04em}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;
+ background-image:linear-gradient(rgba(70,210,235,.12) 1px,transparent 1px),
+ linear-gradient(90deg,rgba(70,210,235,.12) 1px,transparent 1px);
+ background-size:36px 36px;mask-image:linear-gradient(to bottom,black,transparent)}
+.app{height:100%;display:flex;flex-direction:column;padding:14px;gap:10px;max-width:720px;margin:auto}
+.top{display:flex;align-items:center;gap:10px}.brand{flex:1}
+.brand h1{font-size:22px;margin:0;font-weight:800;letter-spacing:.28em}
+.brand p{font-size:8px;color:var(--muted);margin:5px 0 0;letter-spacing:.16em}
+.badge{font-size:8px;color:var(--green);border:1px solid rgba(101,242,196,.3);
+ padding:9px 10px;border-radius:14px;background:rgba(8,37,39,.7)}
+.gear{width:42px;height:38px;border:1px solid var(--line);border-radius:12px;background:#06131e;color:#bff8ff;font-size:18px}
+.hero{flex:1;min-height:310px;border:1px solid var(--line);border-radius:22px;
+ background:linear-gradient(145deg,rgba(7,25,39,.88),rgba(2,9,16,.9));position:relative;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.hero:after{content:"";position:absolute;width:280px;height:280px;border-radius:50%;
+ border:1px solid rgba(85,231,255,.08);box-shadow:0 0 80px rgba(85,231,255,.08) inset}
+.core{width:112px;height:112px;border-radius:50%;position:relative;display:grid;place-items:center;
+ border:2px solid var(--cyan);background:radial-gradient(circle,#0d3445,#06131e 62%,#02070d);
+ box-shadow:0 0 24px rgba(85,231,255,.35),0 0 70px rgba(85,231,255,.12);z-index:2}
+.core b{font-size:13px;line-height:1.5;text-align:center;letter-spacing:.18em}
+.ring{position:absolute;border:1px solid rgba(85,231,255,.5);border-radius:50%;z-index:1}
+.r1{width:170px;height:170px;animation:spin 12s linear infinite}
+.r2{width:220px;height:220px;border-style:dashed;animation:spin 18s linear infinite reverse}
+.r3{width:275px;height:275px;border-color:rgba(101,242,196,.16);animation:pulse 3s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}} @keyframes pulse{50%{transform:scale(1.04);opacity:.55}}
+.state{margin-top:18px;font-size:10px;color:var(--cyan);letter-spacing:.14em;z-index:3}
+.sub{font-size:7px;color:#557c8d;margin-top:8px;z-index:3;letter-spacing:.12em}
+.matrix{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.cell,.console,.inputbar{border:1px solid var(--line);border-radius:16px;background:var(--panel);backdrop-filter:blur(8px)}
+.cell{padding:9px 5px;text-align:center}.cell small{display:block;color:#557f91;font-size:7px;margin-bottom:5px}.cell strong{font-size:9px}
+.console{padding:10px;min-height:74px;max-height:100px;overflow:auto}
+.log{font-size:9px;line-height:1.7;color:#8eb9c8}.log b{color:var(--cyan)}
+.inputbar{display:flex;gap:7px;padding:7px}.inputbar input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:#dffaff;font-size:12px;padding:9px}
+.btn{border:1px solid rgba(85,231,255,.35);background:#071a27;color:#cfffff;border-radius:12px;padding:0 12px;font-weight:700}
+.mic{width:48px;font-size:17px}.footer{text-align:center;color:#365b69;font-size:7px;letter-spacing:.13em}
+.listening .core{box-shadow:0 0 35px rgba(101,242,196,.5),0 0 100px rgba(101,242,196,.16);border-color:var(--green)}
+.listening .state{color:var(--green)}
+@media(max-height:650px){.hero{min-height:260px}.r3{width:230px;height:230px}.r2{width:190px;height:190px}.r1{width:145px;height:145px}.core{width:92px;height:92px}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="top">
+    <div class="brand"><h1>F R I D A Y</h1><p>PERSONAL INTELLIGENCE // ADVANCED NEURAL SYSTEM</p></div>
+    <div class="badge" id="online">● ONLINE</div><button class="gear" onclick="send('open settings')">⚙</button>
+  </header>
 
+  <main class="hero" id="hero">
+    <div class="ring r3"></div><div class="ring r2"></div><div class="ring r1"></div>
+    <div class="core" id="core" onclick="toggleListen()"><b>FRIDAY<br>AI</b></div>
+    <div class="state" id="state">SYSTEM ONLINE • AWAITING COMMAND</div>
+    <div class="sub">VOICE / VISION / REASONING / AUTOMATION</div>
+  </main>
+
+  <section class="matrix">
+    <div class="cell"><small>CORE</small><strong>ONLINE</strong></div>
+    <div class="cell"><small>VOICE</small><strong id="voice">READY</strong></div>
+    <div class="cell"><small>BRAIN</small><strong>HYBRID</strong></div>
+    <div class="cell"><small>AI</small><strong>ADVANCED</strong></div>
+  </section>
+
+  <section class="console" id="console">
+    <div class="log"><b>FRIDAY</b> :: Neural interface initialized.</div>
+    <div class="log"><b>SYSTEM</b> :: Awaiting user command...</div>
+  </section>
+
+  <form class="inputbar" onsubmit="event.preventDefault();send(input.value);input.value=''">
+    <input id="input" autocomplete="off" placeholder="Speak or enter a command…">
+    <button class="btn mic" type="button" onclick="toggleListen()">◉</button>
+    <button class="btn" type="submit">SEND</button>
+  </form>
+  <div class="footer">FRIDAY v10.9 // LOCAL UI // WEBVIEW READY</div>
+</div>
+
+<script>
+let listening=false;
+const app=document.getElementById('app'), state=document.getElementById('state'), voice=document.getElementById('voice');
+const input=document.getElementById('input'), consoleBox=document.getElementById('console');
+
+function log(who,msg){
+  const d=document.createElement('div'); d.className='log';
+  d.innerHTML='<b>'+escapeHtml(who)+'</b> :: '+escapeHtml(msg);
+  consoleBox.appendChild(d); consoleBox.scrollTop=consoleBox.scrollHeight;
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function setState(s){state.textContent=s;}
+function send(command){
+  command=String(command||'').trim(); if(!command)return;
+  log('USER',command); setState('PROCESSING • NEURAL REASONING');
+  try{
+    if(window.Android && Android.sendCommand) Android.sendCommand(command);
+    else { setTimeout(()=>{log('FRIDAY','Command received. Android bridge not connected in browser preview.');setState('SYSTEM ONLINE • AWAITING COMMAND')},450); }
+  }catch(e){log('SYSTEM','Bridge unavailable.');setState('SYSTEM ONLINE • AWAITING COMMAND')}
+}
+function toggleListen(){
+  try{
+    if(window.Android && Android.startListening){Android.startListening();return;}
+  }catch(e){}
+  listening=!listening; app.classList.toggle('listening',listening);
+  voice.textContent=listening?'LISTENING':'READY'; setState(listening?'LISTENING • SPEAK NOW':'SYSTEM ONLINE • AWAITING COMMAND');
+  if(listening) log('FRIDAY','Voice interface activated.');
+}
+window.Friday={
+  setListening(v){listening=!!v;app.classList.toggle('listening',listening);voice.textContent=listening?'LISTENING':'READY';},
+  setStatus(v){setState(v)},
+  addMessage(who,msg){log(who,msg)}
+};
+</script>
+</body>
+</html>
