@@ -24,6 +24,32 @@ const text = input.value.trim();
 
 if (!text) return;
 
+const chat = document.getElementById("chat");
+const input = document.getElementById("userInput");
+
+function addMessage(text, sender) {
+const message = document.createElement("div");
+
+message.className =
+    sender === "user"
+        ? "message user"
+        : "message jarvis";
+
+message.innerHTML =
+    sender === "user"
+        ? `<b>YOU:</b><br>${text}`
+        : `<b>JARVIS:</b><br>${text}`;
+
+chat.appendChild(message);
+chat.scrollTop = chat.scrollHeight;
+
+}
+
+function sendMessage() {
+const text = input.value.trim();
+
+if (!text) return;
+
 addMessage(text, "user");
 input.value = "";
 
