@@ -1,127 +1,369 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#02070d">
-<title>FRIDAY // Advanced AI</title>
-<style>
-:root{
-  --bg:#02070d;--panel:rgba(5,17,28,.78);--line:rgba(73,206,235,.28);
-  --cyan:#55e7ff;--cyan2:#9df5ff;--green:#65f2c4;--muted:#6c9aaa;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS AI</title><style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
 }
-*{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden}
-body{font-family:Arial,Helvetica,sans-serif;background:
- radial-gradient(circle at 50% 42%,rgba(18,105,139,.18),transparent 30%),
- radial-gradient(circle at 20% 20%,rgba(24,75,120,.16),transparent 28%),var(--bg);
- color:#dffaff;letter-spacing:.04em}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;
- background-image:linear-gradient(rgba(70,210,235,.12) 1px,transparent 1px),
- linear-gradient(90deg,rgba(70,210,235,.12) 1px,transparent 1px);
- background-size:36px 36px;mask-image:linear-gradient(to bottom,black,transparent)}
-.app{height:100%;display:flex;flex-direction:column;padding:14px;gap:10px;max-width:720px;margin:auto}
-.top{display:flex;align-items:center;gap:10px}.brand{flex:1}
-.brand h1{font-size:22px;margin:0;font-weight:800;letter-spacing:.28em}
-.brand p{font-size:8px;color:var(--muted);margin:5px 0 0;letter-spacing:.16em}
-.badge{font-size:8px;color:var(--green);border:1px solid rgba(101,242,196,.3);
- padding:9px 10px;border-radius:14px;background:rgba(8,37,39,.7)}
-.gear{width:42px;height:38px;border:1px solid var(--line);border-radius:12px;background:#06131e;color:#bff8ff;font-size:18px}
-.hero{flex:1;min-height:310px;border:1px solid var(--line);border-radius:22px;
- background:linear-gradient(145deg,rgba(7,25,39,.88),rgba(2,9,16,.9));position:relative;
- display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
-.hero:after{content:"";position:absolute;width:280px;height:280px;border-radius:50%;
- border:1px solid rgba(85,231,255,.08);box-shadow:0 0 80px rgba(85,231,255,.08) inset}
-.core{width:112px;height:112px;border-radius:50%;position:relative;display:grid;place-items:center;
- border:2px solid var(--cyan);background:radial-gradient(circle,#0d3445,#06131e 62%,#02070d);
- box-shadow:0 0 24px rgba(85,231,255,.35),0 0 70px rgba(85,231,255,.12);z-index:2}
-.core b{font-size:13px;line-height:1.5;text-align:center;letter-spacing:.18em}
-.ring{position:absolute;border:1px solid rgba(85,231,255,.5);border-radius:50%;z-index:1}
-.r1{width:170px;height:170px;animation:spin 12s linear infinite}
-.r2{width:220px;height:220px;border-style:dashed;animation:spin 18s linear infinite reverse}
-.r3{width:275px;height:275px;border-color:rgba(101,242,196,.16);animation:pulse 3s ease-in-out infinite}
-@keyframes spin{to{transform:rotate(360deg)}} @keyframes pulse{50%{transform:scale(1.04);opacity:.55}}
-.state{margin-top:18px;font-size:10px;color:var(--cyan);letter-spacing:.14em;z-index:3}
-.sub{font-size:7px;color:#557c8d;margin-top:8px;z-index:3;letter-spacing:.12em}
-.matrix{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
-.cell,.console,.inputbar{border:1px solid var(--line);border-radius:16px;background:var(--panel);backdrop-filter:blur(8px)}
-.cell{padding:9px 5px;text-align:center}.cell small{display:block;color:#557f91;font-size:7px;margin-bottom:5px}.cell strong{font-size:9px}
-.console{padding:10px;min-height:74px;max-height:100px;overflow:auto}
-.log{font-size:9px;line-height:1.7;color:#8eb9c8}.log b{color:var(--cyan)}
-.inputbar{display:flex;gap:7px;padding:7px}.inputbar input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:#dffaff;font-size:12px;padding:9px}
-.btn{border:1px solid rgba(85,231,255,.35);background:#071a27;color:#cfffff;border-radius:12px;padding:0 12px;font-weight:700}
-.mic{width:48px;font-size:17px}.footer{text-align:center;color:#365b69;font-size:7px;letter-spacing:.13em}
-.listening .core{box-shadow:0 0 35px rgba(101,242,196,.5),0 0 100px rgba(101,242,196,.16);border-color:var(--green)}
-.listening .state{color:var(--green)}
-@media(max-height:650px){.hero{min-height:260px}.r3{width:230px;height:230px}.r2{width:190px;height:190px}.r1{width:145px;height:145px}.core{width:92px;height:92px}}
-</style>
-</head>
-<body>
-<div class="app" id="app">
-  <header class="top">
-    <div class="brand"><h1>F R I D A Y</h1><p>PERSONAL INTELLIGENCE // ADVANCED NEURAL SYSTEM</p></div>
-    <div class="badge" id="online">● ONLINE</div><button class="gear" onclick="send('open settings')">⚙</button>
-  </header>
 
-  <main class="hero" id="hero">
-    <div class="ring r3"></div><div class="ring r2"></div><div class="ring r1"></div>
-    <div class="core" id="core" onclick="toggleListen()"><b>FRIDAY<br>AI</b></div>
-    <div class="state" id="state">SYSTEM ONLINE • AWAITING COMMAND</div>
-    <div class="sub">VOICE / VISION / REASONING / AUTOMATION</div>
-  </main>
+body {
+    background: #050b12;
+    color: #e8faff;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
 
-  <section class="matrix">
-    <div class="cell"><small>CORE</small><strong>ONLINE</strong></div>
-    <div class="cell"><small>VOICE</small><strong id="voice">READY</strong></div>
-    <div class="cell"><small>BRAIN</small><strong>HYBRID</strong></div>
-    <div class="cell"><small>AI</small><strong>ADVANCED</strong></div>
-  </section>
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
 
-  <section class="console" id="console">
-    <div class="log"><b>FRIDAY</b> :: Neural interface initialized.</div>
-    <div class="log"><b>SYSTEM</b> :: Awaiting user command...</div>
-  </section>
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+}
 
-  <form class="inputbar" onsubmit="event.preventDefault();send(input.value);input.value=''">
-    <input id="input" autocomplete="off" placeholder="Speak or enter a command…">
-    <button class="btn mic" type="button" onclick="toggleListen()">◉</button>
-    <button class="btn" type="submit">SEND</button>
-  </form>
-  <div class="footer">FRIDAY v10.9 // LOCAL UI // WEBVIEW READY</div>
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 4px;
+    color: #00d9ff;
+}
+
+.status {
+    color: #00ff9d;
+    font-size: 13px;
+}
+
+.orb-area {
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.orb {
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #7ff7ff, #00aaff 35%, #003366 70%, #000);
+    box-shadow:
+        0 0 20px #00d9ff,
+        0 0 50px #0099ff,
+        0 0 100px #0055ff;
+    animation: pulse 2s infinite ease-in-out;
+    position: relative;
+}
+
+.orb::before,
+.orb::after {
+    content: "";
+    position: absolute;
+    border: 2px solid #00d9ff;
+    border-radius: 50%;
+    inset: -20px;
+    animation: rotate 8s linear infinite;
+}
+
+.orb::after {
+    inset: -40px;
+    border-style: dashed;
+    animation-duration: 14s;
+    animation-direction: reverse;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px #00d9ff, 0 0 50px #0099ff;
+    }
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 40px #00ffff, 0 0 100px #0088ff;
+    }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.chat {
+    background: rgba(10, 25, 40, 0.9);
+    border: 1px solid #00aaff;
+    border-radius: 20px;
+    padding: 15px;
+    height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 0 20px rgba(0, 170, 255, 0.2);
+}
+
+.message {
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    max-width: 85%;
+}
+
+.jarvis {
+    background: #062b3b;
+    border-left: 3px solid #00d9ff;
+}
+
+.user {
+    background: #123b2c;
+    border-right: 3px solid #00ff9d;
+    margin-left: auto;
+    text-align: right;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+input {
+    flex: 1;
+    background: #08141f;
+    border: 1px solid #0088cc;
+    color: white;
+    padding: 15px;
+    border-radius: 30px;
+    outline: none;
+}
+
+button {
+    border: none;
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    cursor: pointer;
+    background: #00aaff;
+    color: white;
+    font-size: 20px;
+    box-shadow: 0 0 15px #00aaff;
+}
+
+button:active {
+    transform: scale(0.9);
+}
+
+.commands {
+    margin-top: 20px;
+}
+
+.commands h3 {
+    color: #00d9ff;
+    margin-bottom: 10px;
+}
+
+.command-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.command {
+    background: #0a1c2b;
+    border: 1px solid #0077aa;
+    padding: 10px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.command:hover {
+    background: #003b55;
+}
+
+footer {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 12px;
+    color: #5d8a9e;
+}
+</style></head><body><div class="container"><header>
+    <div class="logo">J.A.R.V.I.S</div>
+    <div class="status">● SYSTEM ONLINE</div>
+</header><div class="orb-area">
+    <div class="orb"></div>
+</div><div class="chat" id="chat">
+    <div class="message jarvis">
+        <b>JARVIS:</b><br>
+        Hello. I am JARVIS, your personal AI assistant. How can I help you today?
+    </div>
+</div><div class="controls">
+    <input
+        type="text"
+        id="userInput"
+        placeholder="Ask JARVIS anything..."
+        onkeydown="if(event.key==='Enter') sendMessage()"
+    ><button onclick="startVoice()">🎤</button>
+<button onclick="sendMessage()">➤</button>
+
+</div><div class="commands">
+    <h3>QUICK COMMANDS</h3><div class="command-list">
+    <div class="command" onclick="quickCommand('What time is it?')">⏰ Time</div>
+    <div class="command" onclick="quickCommand('Open YouTube')">▶ YouTube</div>
+    <div class="command" onclick="quickCommand('Tell me a joke')">😂 Joke</div>
+    <div class="command" onclick="quickCommand('System status')">⚙ Status</div>
+    <div class="command" onclick="quickCommand('Hello Jarvis')">👋 Hello</div>
 </div>
 
-<script>
-let listening=false;
-const app=document.getElementById('app'), state=document.getElementById('state'), voice=document.getElementById('voice');
-const input=document.getElementById('input'), consoleBox=document.getElementById('console');
+</div><footer>
+    JARVIS AI SYSTEM • VERSION 1.0
+</footer></div><script>
 
-function log(who,msg){
-  const d=document.createElement('div'); d.className='log';
-  d.innerHTML='<b>'+escapeHtml(who)+'</b> :: '+escapeHtml(msg);
-  consoleBox.appendChild(d); consoleBox.scrollTop=consoleBox.scrollHeight;
+const chat = document.getElementById("chat");
+const input = document.getElementById("userInput");
+
+function addMessage(text, sender) {
+
+    const message = document.createElement("div");
+
+    message.className =
+        sender === "user"
+        ? "message user"
+        : "message jarvis";
+
+    message.innerHTML =
+        sender === "user"
+        ? "<b>YOU:</b><br>" + text
+        : "<b>JARVIS:</b><br>" + text;
+
+    chat.appendChild(message);
+
+    chat.scrollTop = chat.scrollHeight;
 }
-function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function setState(s){state.textContent=s;}
-function send(command){
-  command=String(command||'').trim(); if(!command)return;
-  log('USER',command); setState('PROCESSING • NEURAL REASONING');
-  try{
-    if(window.Android && Android.sendCommand) Android.sendCommand(command);
-    else { setTimeout(()=>{log('FRIDAY','Command received. Android bridge not connected in browser preview.');setState('SYSTEM ONLINE • AWAITING COMMAND')},450); }
-  }catch(e){log('SYSTEM','Bridge unavailable.');setState('SYSTEM ONLINE • AWAITING COMMAND')}
+
+function sendMessage() {
+
+    const text = input.value.trim();
+
+    if (!text) return;
+
+    addMessage(text, "user");
+
+    input.value = "";
+
+    setTimeout(() => {
+
+        const response = jarvisResponse(text);
+
+        addMessage(response, "jarvis");
+
+        speak(response);
+
+    }, 500);
 }
-function toggleListen(){
-  try{
-    if(window.Android && Android.startListening){Android.startListening();return;}
-  }catch(e){}
-  listening=!listening; app.classList.toggle('listening',listening);
-  voice.textContent=listening?'LISTENING':'READY'; setState(listening?'LISTENING • SPEAK NOW':'SYSTEM ONLINE • AWAITING COMMAND');
-  if(listening) log('FRIDAY','Voice interface activated.');
+
+function quickCommand(command) {
+
+    input.value = command;
+
+    sendMessage();
 }
-window.Friday={
-  setListening(v){listening=!!v;app.classList.toggle('listening',listening);voice.textContent=listening?'LISTENING':'READY';},
-  setStatus(v){setState(v)},
-  addMessage(who,msg){log(who,msg)}
-};
-</script>
-</body>
+
+function jarvisResponse(text) {
+
+    text = text.toLowerCase();
+
+    if (text.includes("hello") || text.includes("hi")) {
+        return "Hello. How may I assist you?";
+    }
+
+    if (text.includes("time")) {
+        return "The current time is " +
+            new Date().toLocaleTimeString();
+    }
+
+    if (text.includes("youtube")) {
+        window.open("https://www.youtube.com", "_blank");
+        return "Opening YouTube.";
+    }
+
+    if (text.includes("joke")) {
+        return "Why do programmers prefer dark mode? Because light attracts bugs.";
+    }
+
+    if (text.includes("status")) {
+        return "All JARVIS systems are operating normally.";
+    }
+
+    if (text.includes("who are you")) {
+        return "I am JARVIS, your virtual AI assistant.";
+    }
+
+    return "I understand your command: " + text +
+        ". Advanced AI integration can be connected here.";
+}
+
+function speak(text) {
+
+    if ("speechSynthesis" in window) {
+
+        const speech = new SpeechSynthesisUtterance(text);
+
+        speech.rate = 1;
+
+        speech.pitch = 0.9;
+
+        window.speechSynthesis.speak(speech);
+    }
+}
+
+function startVoice() {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+
+        alert("Speech recognition is not supported in this browser.");
+
+        return;
+    }
+
+    const recognition =
+        new SpeechRecognition();
+
+    recognition.lang = "en-US";
+
+    recognition.start();
+
+    recognition.onstart = function() {
+
+        addMessage("Listening...", "jarvis");
+    };
+
+    recognition.onresult = function(event) {
+
+        const speechText =
+            event.results[0][0].transcript;
+
+        input.value = speechText;
+
+        sendMessage();
+    };
+
+    recognition.onerror = function() {
+
+        addMessage(
+            "Voice recognition error. Please try again.",
+            "jarvis"
+        );
+    };
+}
+
+</script></body>
 </html>
