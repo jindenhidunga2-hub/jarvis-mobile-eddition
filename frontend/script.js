@@ -11,7 +11,7 @@
 let API_KEY = localStorage.getItem("jarvis_key");
 
 if (!API_KEY) {
-  API_KEY = prompt("Enter your Gemini API Key:");
+  API_KEY = prompt("AQ.Ab8RN6KkEJ4EcFYW33_2d5-Vc73CjPfgsJWdakoSDeZ-ABmHzA");
 
   if (API_KEY) {
     API_KEY = API_KEY.trim();
