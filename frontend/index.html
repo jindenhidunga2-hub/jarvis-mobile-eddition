@@ -1,60 +1,125 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8"><meta
-name="viewport"
-content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  <meta charset="UTF-8">
 
-«»
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  >
 
-  <meta name="theme-color" content="#000000">  <title>J.A.R.V.I.S</title>  <link rel="stylesheet" href="style.css">
-</head><body>  <header>
+  <meta name="theme-color" content="#000000">
+
+  <title>J.A.R.V.I.S</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
     <h1>J.A.R.V.I.S</h1>
     <p>MOBILE EDITION</p>
-  </header>  <!-- JARVIS CORE -->  <div class="core">
+  </header>
+
+  <!-- JARVIS CORE -->
+  <div class="core">
     <div class="ring r1"></div>
     <div class="ring r2"></div>
     <div class="center"></div>
-  </div>  <p class="core-text">CORE ACTIVE</p>  <!-- SYSTEM STATUS -->  <div class="status">
-    <h2>SYSTEM STATUS</h2><div class="row">
-  <span>AI CORE</span>
-  <b class="on">● ONLINE</b>
-</div>
+  </div>
 
-<div class="row">
-  <span>NETWORK</span>
-  <b class="on">● ONLINE</b>
-</div>
+  <p class="core-text">CORE ACTIVE</p>
 
-<div class="row">
-  <span>VOICE</span>
-  <b class="off">○ LOCKED</b>
-</div>
+  <!-- SYSTEM STATUS -->
+  <div class="status">
+    <h2>SYSTEM STATUS</h2>
 
-<div class="row">
-  <span>MEMORY</span>
-  <b class="off">○ LOCKED</b>
-</div>
+    <div class="row">
+      <span>AI CORE</span>
+      <b class="on">● ONLINE</b>
+    </div>
 
-  </div>  <!-- CHAT -->  <div class="chat" id="chat"></div>  <!-- INPUT -->  <div class="input-area"><button
-  id="mic-btn"
-  type="button"
-  aria-label="Use microphone"
->
-  🎙️
-</button>
+    <div class="row">
+      <span>NETWORK</span>
+      <b class="on">● ONLINE</b>
+    </div>
 
-<input
-  id="msg"
-  type="text"
-  placeholder="Ask J.A.R.V.I.S..."
-  autocomplete="off"
-  enterkeyhint="send"
->
+    <div class="row">
+      <span>VOICE</span>
+      <b class="off">○ LOCKED</b>
+    </div>
 
-<button id="send" type="button">
-  SEND
-</button> <!-- Memory Clear Button --> <button id="clear-btn">🧹</button> <!-- Camera / Vision Button --> <button id="cam-
-btn">📷</button> <input type="file" id="img-input" accept="image/*" capture="environment" style="display:none">
+    <div class="row">
+      <span>MEMORY</span>
+      <b class="off">○ LOCKED</b>
+    </div>
+  </div>
 
-  </div>  <script src="script.js"></script></body>
+  <!-- CHAT -->
+  <div class="chat" id="chat"></div>
+
+  <!-- INPUT AREA -->
+  <div class="input-area">
+
+    <!-- MICROPHONE -->
+    <button
+      id="mic-btn"
+      type="button"
+      aria-label="Use microphone"
+    >
+      🎙️
+    </button>
+
+    <!-- MESSAGE INPUT -->
+    <input
+      id="msg"
+      type="text"
+      placeholder="Ask J.A.R.V.I.S..."
+      autocomplete="off"
+      enterkeyhint="send"
+    >
+
+    <!-- SEND -->
+    <button
+      id="send"
+      type="button"
+    >
+      SEND
+    </button>
+
+    <!-- CLEAR MEMORY -->
+    <button
+      id="clear-btn"
+      type="button"
+      aria-label="Clear memory"
+    >
+      🧹
+    </button>
+
+    <!-- CAMERA / VISION -->
+    <button
+      id="cam-btn"
+      type="button"
+      aria-label="Open camera"
+    >
+      📷
+    </button>
+
+    <!-- IMAGE INPUT -->
+    <input
+      type="file"
+      id="img-input"
+      accept="image/*"
+      capture="environment"
+      style="display: none;"
+    >
+
+  </div>
+
+  <!-- JAVASCRIPT -->
+  <script src="script.js"></script>
+
+</body>
 </html>
