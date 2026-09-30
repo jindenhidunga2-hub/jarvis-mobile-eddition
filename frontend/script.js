@@ -1,35 +1,40 @@
 /* =========================================================
-   FRIDAY AI — COMPLETE MOBILE SCRIPT
-   Gemini + Memory + Voice + Microphone + Camera + Tools
+   J.A.R.V.I.S. — FULL MOBILE SCRIPT
+   Gemini + Memory + Voice + Microphone + Camera
+   Google + YouTube + Wikipedia + Agent Mode
    ========================================================= */
 
-/* =========================
-   1. GEMINI API
-   ========================= */
 
-let API_KEY = localStorage.getItem("friday_key");
+/* =========================================================
+   1. GEMINI API KEY
+   ========================================================= */
+
+let API_KEY = localStorage.getItem("jarvis_key");
 
 if (!API_KEY) {
     API_KEY = prompt("Enter your Gemini API Key:");
 
     if (API_KEY) {
         API_KEY = API_KEY.trim();
-        localStorage.setItem("friday_key", API_KEY);
+        localStorage.setItem("jarvis_key", API_KEY);
     }
 }
 
-/*
- * Keep this list limited to models that actually exist
- * in the API project you are using.
- */
+
+/* =========================================================
+   2. GEMINI MODELS
+   ========================================================= */
+
 const MODELS = [
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
     "gemini-flash-latest"
 ];
 
 
-/* =========================
-   2. DOM ELEMENTS
-   ========================= */
+/* =========================================================
+   3. DOM ELEMENTS
+   ========================================================= */
 
 const chat = document.getElementById("chat");
 const input = document.getElementById("msg");
@@ -40,42 +45,59 @@ const camBtn = document.getElementById("cam-btn");
 const imgInput = document.getElementById("img-input");
 
 
-/* =========================
-   3. MEMORY
-   ========================= */
+/* =========================================================
+   4. MEMORY
+   ========================================================= */
 
 let MEMORY = [];
 
 try {
-    const stored = JSON.parse(
-        localStorage.getItem("friday_memory") || "[]"
-    );
 
-    if (Array.isArray(stored)) {
-        MEMORY = stored.filter(item =>
+    const storedMemory =
+        JSON.parse(
+            localStorage.getItem("jarvis_memory") || "[]"
+        );
+
+    if (Array.isArray(storedMemory)) {
+
+        MEMORY = storedMemory.filter(item =>
             item &&
             (item.role === "user" || item.role === "model") &&
             typeof item.text === "string"
         );
+
     }
+
 } catch (error) {
+
+    console.warn("Memory load failed:", error);
     MEMORY = [];
+
 }
+
 
 function saveMemory() {
+
     try {
+
         localStorage.setItem(
-            "friday_memory",
+            "jarvis_memory",
             JSON.stringify(MEMORY.slice(-50))
         );
+
     } catch (error) {
+
         console.warn("Memory save failed:", error);
+
     }
+
 }
 
+
 function remember(role, text) {
+
     MEMORY.push({
-        role,
+        role: role,
         text: String(text)
     });
 
@@ -84,17 +106,20 @@ function remember(role, text) {
     }
 
     saveMemory();
+
 }
 
 
-/* =========================
-   4. CHAT UI
-   ========================= */
+/* =========================================================
+   5. CHAT DISPLAY
+   ========================================================= */
 
 function add(text, type = "ai") {
+
     if (!chat) return null;
 
-    const message = document.createElement("div");
+    const message =
+        document.createElement("div");
 
     message.className =
         type === "user"
@@ -108,37 +133,41 @@ function add(text, type = "ai") {
     chat.scrollTop = chat.scrollHeight;
 
     return message;
+
 }
 
 
-/* =========================
-   5. LOAD MEMORY INTO CHAT
-   ========================= */
+/* =========================================================
+   6. RESTORE MEMORY
+   ========================================================= */
 
 MEMORY.forEach(item => {
 
     const prefix =
         item.role === "user"
             ? "YOU: "
-            : "FRIDAY: ";
+            : "J.A.R.V.I.S: ";
 
     add(
         prefix + item.text,
-        item.role === "user" ? "user" : "ai"
+        item.role === "user"
+            ? "user"
+            : "ai"
     );
 
 });
 
 
-/* =========================
-   6. FETCH WITH TIMEOUT
-   ========================= */
+/* =========================================================
+   7. FETCH JSON WITH TIMEOUT
+   ========================================================= */
 
 async function fetchToolJson(
     url,
     options = {},
     timeoutMs = 10000
 ) {
+
     const controller =
         typeof AbortController !== "undefined"
             ? new AbortController()
@@ -147,23 +176,27 @@ async function fetchToolJson(
     let timeoutId = null;
 
     if (controller) {
-        timeoutId = setTimeout(
-            () => controller.abort(),
-            timeoutMs
-        );
+
+        timeoutId =
+            setTimeout(
+                () => controller.abort(),
+                timeoutMs
+            );
+
     }
 
     try {
 
-        const response = await fetch(
-            url,
-            {
-                ...options,
-                ...(controller
-                    ? { signal: controller.signal }
-                    : {})
-            }
-        );
+        const response =
+            await fetch(
+                url,
+                {
+                    ...options,
+                    ...(controller
+                        ? { signal: controller.signal }
+                        : {})
+                }
+            );
 
         if (!response.ok) {
             throw new Error(
@@ -180,22 +213,24 @@ async function fetchToolJson(
         }
 
     }
+
 }
 
 
-/* =========================
-   7. OPEN WEBSITE
-   ========================= */
+/* =========================================================
+   8. OPEN WEBSITE
+   ========================================================= */
 
 function openWebsite(url) {
 
     try {
 
-        const destination = new URL(url);
+        const destination =
+            new URL(url);
 
         if (
-            destination.protocol !== "http:" &&
-            destination.protocol !== "https:"
+            destination.protocol !== "https:" &&
+            destination.protocol !== "http:"
         ) {
             return false;
         }
@@ -210,60 +245,67 @@ function openWebsite(url) {
 
     } catch (error) {
 
+        console.warn("URL error:", error);
         return false;
 
     }
+
 }
 
 
-/* =========================
-   8. BASIC TOOLS
-   ========================= */
+/* =========================================================
+   9. BASIC TOOLS
+   ========================================================= */
 
 async function handleTools(text) {
 
-    const value = String(text || "").trim();
+    const value =
+        String(text || "").trim();
 
 
-    /* YouTube */
+    /* OPEN YOUTUBE */
 
     if (
-        /^(please\s+)?(open\s+)?youtube( please)?[.!?]*$/i
+        /^(?:please\s+)?(?:open\s+)?youtube(?:\s+please)?[.!?]*$/i
             .test(value)
     ) {
 
-        openWebsite("https://www.youtube.com");
+        openWebsite(
+            "https://www.youtube.com"
+        );
 
         return "Opening YouTube, Boss.";
 
     }
 
 
-    /* Google */
+    /* OPEN GOOGLE */
 
     if (
-        /^(please\s+)?(open\s+)?google( please)?[.!?]*$/i
+        /^(?:please\s+)?(?:open\s+)?google(?:\s+please)?[.!?]*$/i
             .test(value)
     ) {
 
-        openWebsite("https://www.google.com");
+        openWebsite(
+            "https://www.google.com"
+        );
 
         return "Opening Google, Boss.";
 
     }
 
 
-    /* Direct URL */
+    /* DIRECT URL */
 
-    const urlMatch = value.match(
-        /^(?:open|visit|go to)\s+(https?:\/\/\S+)$/i
-    );
-
-    if (urlMatch) {
-
-        const success = openWebsite(
-            urlMatch[1]
+    const urlCommand =
+        value.match(
+            /^(?:open|visit|go to)\s+(https?:\/\/\S+)$/i
         );
+
+    if (urlCommand) {
+
+        const success =
+            openWebsite(urlCommand[1]);
 
         return success
             ? "Opening the requested website, Boss."
@@ -272,16 +314,17 @@ async function handleTools(text) {
     }
 
 
-    /* Google search */
+    /* GOOGLE SEARCH */
 
-    const googleMatch = value.match(
-        /^(?:google\s+search|search\s+(?:on\s+)?google)(?:\s+for)?\s+(.+)$/i
-    );
+    const googleSearch =
+        value.match(
+            /^(?:google\s+search|search\s+(?:on\s+)?google)(?:\s+for)?\s+(.+)$/i
+        );
 
-    if (googleMatch) {
+    if (googleSearch) {
 
         const query =
-            googleMatch[1].trim();
+            googleSearch[1].trim();
 
         openWebsite(
             "https://www.google.com/search?q=" +
@@ -297,16 +340,17 @@ async function handleTools(text) {
     }
 
 
-    /* YouTube search */
+    /* YOUTUBE SEARCH */
 
-    const youtubeMatch = value.match(
-        /^(?:play|youtube(?:\s+search)?|search\s+(?:on\s+)?youtube)(?:\s+for)?\s+(.+)$/i
-    );
+    const youtubeSearch =
+        value.match(
+            /^(?:play|youtube(?:\s+search)?|search\s+(?:on\s+)?youtube)(?:\s+for)?\s+(.+)$/i
+        );
 
-    if (youtubeMatch) {
+    if (youtubeSearch) {
 
         const query =
-            youtubeMatch[1].trim();
+            youtubeSearch[1].trim();
 
         openWebsite(
             "https://www.youtube.com/results?search_query=" +
@@ -322,16 +366,17 @@ async function handleTools(text) {
     }
 
 
-    /* Wikipedia */
+    /* WIKIPEDIA SEARCH */
 
-    const wikiMatch = value.match(
-        /^(?:search|look up)\s+(?:for\s+)?(.+)$/i
-    );
+    const searchMatch =
+        value.match(
+            /^(?:search|look up)(?:\s+for)?\s+(.+)$/i
+        );
 
-    if (wikiMatch) {
+    if (searchMatch) {
 
         const query =
-            wikiMatch[1].trim();
+            searchMatch[1].trim();
 
         try {
 
@@ -352,9 +397,7 @@ async function handleTools(text) {
                 data?.query?.search?.[0];
 
             if (!result) {
-                return (
-                    "I could not find that, Boss."
-                );
+                return "I could not find that, Boss.";
             }
 
             const snippet =
@@ -376,9 +419,7 @@ async function handleTools(text) {
 
         } catch (error) {
 
-            return (
-                "Wikipedia search failed, Boss."
-            );
+            return "Wikipedia search failed, Boss.";
 
         }
 
@@ -386,30 +427,34 @@ async function handleTools(text) {
 
 
     return null;
+
 }
 
 
-/* =========================
-   9. AGENT MODE
-   ========================= */
+/* =========================================================
+   10. AGENT MODE
+   ========================================================= */
 
 const AGENT_TOOLS = Object.freeze({
 
     time: async () => {
 
-        return new Date().toLocaleString();
+        return (
+            "Current time: " +
+            new Date().toLocaleString("en-IN")
+        );
 
     },
 
     weather: async () => {
 
-        return "Weather tool requires a weather service/API.";
+        return "Weather requires a weather API.";
 
     },
 
     news: async () => {
 
-        return "News tool requires a news service/API.";
+        return "News requires a news API.";
 
     },
 
@@ -425,9 +470,15 @@ const AGENT_TOOLS = Object.freeze({
             const price =
                 data?.bitcoin?.usd;
 
-            return price
-                ? `Bitcoin is approximately $${price} USD.`
-                : "Bitcoin price unavailable.";
+            if (!price) {
+                return "Bitcoin price unavailable.";
+            }
+
+            return (
+                "Bitcoin is approximately $" +
+                price +
+                " USD."
+            );
 
         } catch (error) {
 
@@ -464,6 +515,7 @@ function isAgentModeRequest(text = "") {
         /\b(time|weather|news|crypto|bitcoin|btc)\b/
             .test(value)
     );
+
 }
 
 
@@ -474,9 +526,7 @@ function fallbackAgentToolPlan(goal) {
 
     const tools = [];
 
-    if (
-        /\btime\b|\bclock\b/.test(text)
-    ) {
+    if (/\btime\b|\bclock\b/.test(text)) {
         tools.push("time");
     }
 
@@ -499,13 +549,14 @@ function fallbackAgentToolPlan(goal) {
     }
 
     return tools;
+
 }
 
 
 async function runAgent(goal) {
 
     add(
-        "FRIDAY: Agent mode active.",
+        "J.A.R.V.I.S: Agent mode active.",
         "ai"
     );
 
@@ -513,12 +564,7 @@ async function runAgent(goal) {
         fallbackAgentToolPlan(goal);
 
     if (!tools.length) {
-
-        return await callGemini(
-            "Analyze this request and provide a concise useful answer: " +
-            goal
-        );
-
+        return await callGemini(goal);
     }
 
     const results = {};
@@ -529,11 +575,10 @@ async function runAgent(goal) {
         i++
     ) {
 
-        const tool =
-            tools[i];
+        const tool = tools[i];
 
         add(
-            `FRIDAY: Running ${tool} tool...`,
+            `J.A.R.V.I.S: Running ${tool} tool...`,
             "ai"
         );
 
@@ -551,30 +596,26 @@ async function runAgent(goal) {
 
     }
 
-    const prompt =
+    const summaryPrompt =
         "Goal: " +
         JSON.stringify(goal) +
         "\n\nTool results:\n" +
         JSON.stringify(results) +
-        "\n\nGive a concise Telugu/English response.";
+        "\n\nGive a concise Telugu/English summary.";
 
-    return await callGemini(prompt);
+    return await callGemini(
+        summaryPrompt
+    );
 
 }
 
 
-/* =========================
-   10. GEMINI BRAIN
-   ========================= */
+/* =========================================================
+   11. GEMINI BRAIN
+   FALLBACK + RETRY
+   ========================================================= */
 
 async function callGemini(prompt) {
-
-    return await callGeminiRaw(prompt);
-
-}
-
-
-async function callGeminiRaw(prompt) {
 
     if (!API_KEY) {
 
@@ -588,17 +629,19 @@ async function callGeminiRaw(prompt) {
         MEMORY
             .slice(-12)
             .map(item => ({
+
                 role:
                     item.role === "model"
                         ? "model"
                         : "user",
+
                 parts: [
                     {
                         text: item.text
                     }
                 ]
-            }));
 
+            }));
 
     history.push({
 
@@ -612,96 +655,169 @@ async function callGeminiRaw(prompt) {
 
     });
 
-
     let lastError =
         "Gemini request failed.";
 
+    for (
+        const model of MODELS
+    ) {
 
-    for (const model of MODELS) {
+        for (
+            let attempt = 1;
+            attempt <= 2;
+            attempt++
+        ) {
 
-        try {
+            try {
 
-            const endpoint =
-                "https://generativelanguage.googleapis.com/v1beta/models/" +
-                encodeURIComponent(model) +
-                ":generateContent?key=" +
-                encodeURIComponent(API_KEY);
+                const endpoint =
+                    "https://generativelanguage.googleapis.com/v1beta/models/" +
+                    encodeURIComponent(model) +
+                    ":generateContent?key=" +
+                    encodeURIComponent(API_KEY);
 
+                const response =
+                    await fetch(
+                        endpoint,
+                        {
+                            method: "POST",
 
-            const response =
-                await fetch(
-                    endpoint,
-                    {
-                        method: "POST",
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
 
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
+                            body:
+                                JSON.stringify({
+                                    contents:
+                                        history
+                                })
+                        }
+                    );
 
-                        body: JSON.stringify({
-                            contents: history
-                        })
+                const data =
+                    await response.json();
+
+                if (response.ok) {
+
+                    const answer =
+                        data?.candidates?.[0]
+                            ?.content
+                            ?.parts
+                            ?.map(
+                                part =>
+                                    part.text || ""
+                            )
+                            .join("")
+                            .trim();
+
+                    if (answer) {
+                        return answer;
                     }
-                );
 
+                    lastError =
+                        `${model}: Empty response.`;
 
-            const data =
-                await response.json();
+                    break;
 
+                }
 
-            if (!response.ok) {
-
-                const message =
+                const errorMessage =
                     data?.error?.message ||
                     `HTTP ${response.status}`;
 
                 lastError =
-                    `${model}: ${message}`;
+                    `${model}: ${errorMessage}`;
 
-                continue;
+
+                /* Authentication errors */
+
+                if (
+                    response.status === 400 ||
+                    response.status === 401 ||
+                    response.status === 403
+                ) {
+
+                    throw new Error(
+                        errorMessage
+                    );
+
+                }
+
+
+                /* Temporary errors */
+
+                if (
+                    response.status === 429 ||
+                    response.status === 500 ||
+                    response.status === 502 ||
+                    response.status === 503 ||
+                    response.status === 504
+                ) {
+
+                    if (attempt < 2) {
+
+                        await new Promise(
+                            resolve =>
+                                setTimeout(
+                                    resolve,
+                                    attempt * 2000
+                                )
+                        );
+
+                        continue;
+
+                    }
+
+                }
+
+                break;
+
+            } catch (error) {
+
+                lastError =
+                    error?.message ||
+                    "Network error.";
+
+                if (
+                    /API key|authentication|credential|permission/i
+                        .test(lastError)
+                ) {
+
+                    throw error;
+
+                }
+
+                if (attempt < 2) {
+
+                    await new Promise(
+                        resolve =>
+                            setTimeout(
+                                resolve,
+                                attempt * 2000
+                            )
+                    );
+
+                    continue;
+
+                }
 
             }
-
-
-            const answer =
-                data?.candidates?.[0]
-                    ?.content
-                    ?.parts
-                    ?.map(part => part.text || "")
-                    .join("")
-                    .trim();
-
-
-            if (answer) {
-
-                return answer;
-
-            }
-
-
-            lastError =
-                `${model}: Empty response.`;
-
-        } catch (error) {
-
-            lastError =
-                error?.message ||
-                "Network error.";
 
         }
 
     }
 
-
-    throw new Error(lastError);
+    throw new Error(
+        lastError
+    );
 
 }
 
 
-/* =========================
-   11. SEND MESSAGE
-   ========================= */
+/* =========================================================
+   12. SEND MESSAGE
+   ========================================================= */
 
 async function sendMessage() {
 
@@ -711,7 +827,6 @@ async function sendMessage() {
         input.value.trim();
 
     if (!text) return;
-
 
     input.value = "";
 
@@ -726,9 +841,11 @@ async function sendMessage() {
     );
 
 
-    /* Agent */
+    /* AGENT MODE */
 
-    if (isAgentModeRequest(text)) {
+    if (
+        isAgentModeRequest(text)
+    ) {
 
         try {
 
@@ -736,7 +853,7 @@ async function sendMessage() {
                 await runAgent(text);
 
             add(
-                "FRIDAY: " + result,
+                "J.A.R.V.I.S: " + result,
                 "ai"
             );
 
@@ -749,22 +866,20 @@ async function sendMessage() {
 
         } catch (error) {
 
-            const message =
-                "Agent error: " +
-                error.message;
-
             add(
-                "FRIDAY: " + message,
+                "J.A.R.V.I.S: Agent error: " +
+                error.message,
                 "ai"
             );
 
         }
 
         return;
+
     }
 
 
-    /* Built-in tools */
+    /* BUILT-IN TOOLS */
 
     try {
 
@@ -774,7 +889,8 @@ async function sendMessage() {
         if (toolResult) {
 
             add(
-                "FRIDAY: " + toolResult,
+                "J.A.R.V.I.S: " +
+                toolResult,
                 "ai"
             );
 
@@ -799,65 +915,57 @@ async function sendMessage() {
     }
 
 
-    /* Gemini */
+    /* GEMINI */
 
     const loading =
         add(
-            "FRIDAY: Thinking...",
+            "J.A.R.V.I.S: Thinking...",
             "ai"
         );
-
 
     try {
 
         const answer =
             await callGemini(text);
 
-
         if (loading) {
 
             loading.textContent =
-                "FRIDAY: " + answer;
+                "J.A.R.V.I.S: " +
+                answer;
 
         }
-
 
         remember(
             "model",
             answer
         );
 
-
         speak(answer);
 
     } catch (error) {
 
-        const message =
-            "ERROR: " +
-            error.message;
-
+        console.error(
+            "Gemini:",
+            error
+        );
 
         if (loading) {
 
             loading.textContent =
-                "FRIDAY: " + message;
+                "J.A.R.V.I.S: ERROR: " +
+                error.message;
 
         }
-
-
-        console.error(
-            "Gemini error:",
-            error
-        );
 
     }
 
 }
 
 
-/* =========================
-   12. SEND BUTTON
-   ========================= */
+/* =========================================================
+   13. SEND BUTTON
+   ========================================================= */
 
 if (sendBtn) {
 
@@ -869,9 +977,9 @@ if (sendBtn) {
 }
 
 
-/* =========================
-   13. ENTER KEY
-   ========================= */
+/* =========================================================
+   14. ENTER KEY
+   ========================================================= */
 
 if (input) {
 
@@ -896,9 +1004,9 @@ if (input) {
 }
 
 
-/* =========================
-   14. TEXT TO SPEECH
-   ========================= */
+/* =========================================================
+   15. TEXT TO SPEECH
+   ========================================================= */
 
 function speak(text) {
 
@@ -911,7 +1019,7 @@ function speak(text) {
     const cleanText =
         String(text)
             .replace(
-                /^FRIDAY:\s*/i,
+                /^J\.A\.R\.V\.I\.S:\s*/i,
                 ""
             );
 
@@ -934,14 +1042,13 @@ function speak(text) {
 }
 
 
-/* =========================
-   15. MICROPHONE
-   ========================= */
+/* =========================================================
+   16. MICROPHONE
+   ========================================================= */
 
 const SpeechRecognition =
     window.SpeechRecognition ||
     window.webkitSpeechRecognition;
-
 
 let recognition = null;
 
@@ -951,27 +1058,31 @@ if (SpeechRecognition) {
     recognition =
         new SpeechRecognition();
 
-    recognition.lang = "en-IN";
+    recognition.lang =
+        "en-IN";
 
-    recognition.continuous = false;
+    recognition.continuous =
+        false;
 
-    recognition.interimResults = false;
+    recognition.interimResults =
+        false;
 
 
-    recognition.onstart = () => {
+    recognition.onstart =
+        () => {
 
-        if (micBtn) {
+            if (micBtn) {
 
-            micBtn.classList.add(
-                "listening"
-            );
+                micBtn.classList.add(
+                    "listening"
+                );
 
-            micBtn.textContent =
-                "🔴";
+                micBtn.textContent =
+                    "🔴";
 
-        }
+            }
 
-    };
+        };
 
 
     recognition.onresult =
@@ -1005,20 +1116,21 @@ if (SpeechRecognition) {
         };
 
 
-    recognition.onend = () => {
+    recognition.onend =
+        () => {
 
-        if (micBtn) {
+            if (micBtn) {
 
-            micBtn.classList.remove(
-                "listening"
-            );
+                micBtn.classList.remove(
+                    "listening"
+                );
 
-            micBtn.textContent =
-                "🎤";
+                micBtn.textContent =
+                    "🎤";
 
-        }
+            }
 
-    };
+        };
 
 
     if (micBtn) {
@@ -1054,7 +1166,7 @@ if (SpeechRecognition) {
             () => {
 
                 add(
-                    "FRIDAY: Voice recognition is not supported by this browser.",
+                    "J.A.R.V.I.S: Voice recognition is not supported by this browser.",
                     "ai"
                 );
 
@@ -1066,9 +1178,9 @@ if (SpeechRecognition) {
 }
 
 
-/* =========================
-   16. CLEAR MEMORY
-   ========================= */
+/* =========================================================
+   17. CLEAR MEMORY
+   ========================================================= */
 
 if (clearBtn) {
 
@@ -1078,28 +1190,25 @@ if (clearBtn) {
 
             const confirmed =
                 confirm(
-                    "Clear FRIDAY memory?"
+                    "Clear J.A.R.V.I.S memory?"
                 );
 
-            if (!confirmed) return;
-
+            if (!confirmed) {
+                return;
+            }
 
             MEMORY = [];
 
             localStorage.removeItem(
-                "friday_memory"
+                "jarvis_memory"
             );
 
-
             if (chat) {
-
                 chat.innerHTML = "";
-
             }
 
-
             add(
-                "FRIDAY: Memory cleared, Boss.",
+                "J.A.R.V.I.S: Memory cleared, Boss.",
                 "ai"
             );
 
@@ -1109,11 +1218,14 @@ if (clearBtn) {
 }
 
 
-/* =========================
-   17. CAMERA / IMAGE
-   ========================= */
+/* =========================================================
+   18. CAMERA / IMAGE INPUT
+   ========================================================= */
 
-if (camBtn && imgInput) {
+if (
+    camBtn &&
+    imgInput
+) {
 
     camBtn.addEventListener(
         "click",
@@ -1132,13 +1244,16 @@ if (camBtn && imgInput) {
             const file =
                 event.target.files?.[0];
 
-            if (!file) return;
+            if (!file) {
+                return;
+            }
 
-
-            if (!file.type.startsWith("image/")) {
+            if (
+                !file.type.startsWith("image/")
+            ) {
 
                 add(
-                    "FRIDAY: Please select an image.",
+                    "J.A.R.V.I.S: Please select an image.",
                     "ai"
                 );
 
@@ -1146,67 +1261,64 @@ if (camBtn && imgInput) {
 
             }
 
-
             const reader =
                 new FileReader();
 
 
-            reader.onload = () => {
+            reader.onload =
+                () => {
 
-                const imageData =
-                    reader.result;
-
-
-                add(
-                    "YOU: Image selected.",
-                    "user"
-                );
+                    const imageData =
+                        reader.result;
 
 
-                /*
-                 * The image is currently previewed.
-                 * To send images to Gemini, the image
-                 * must be included as inlineData in
-                 * the generateContent request.
-                 */
-
-                const preview =
-                    document.createElement("img");
-
-                preview.src =
-                    imageData;
-
-                preview.style.maxWidth =
-                    "85%";
-
-                preview.style.borderRadius =
-                    "12px";
-
-                preview.style.margin =
-                    "8px 0";
-
-
-                if (chat) {
-
-                    chat.appendChild(
-                        preview
+                    add(
+                        "YOU: Image selected.",
+                        "user"
                     );
 
-                    chat.scrollTop =
-                        chat.scrollHeight;
 
-                }
+                    const preview =
+                        document.createElement(
+                            "img"
+                        );
+
+                    preview.src =
+                        imageData;
+
+                    preview.style.maxWidth =
+                        "85%";
+
+                    preview.style.borderRadius =
+                        "12px";
+
+                    preview.style.margin =
+                        "8px 0";
 
 
-                add(
-                    "FRIDAY: Image received. Vision processing can be connected to Gemini next.",
-                    "ai"
-                );
+                    if (chat) {
 
-            };
+                        chat.appendChild(
+                            preview
+                        );
+
+                        chat.scrollTop =
+                            chat.scrollHeight;
+
+                    }
 
 
-            reader.readAsDataURL(file);
+                    add(
+                        "J.A.R.V.I.S: Image received.",
+                        "ai"
+                    );
+
+                };
+
+
+            reader.readAsDataURL(
+                file
+            );
 
             imgInput.value = "";
 
@@ -1216,9 +1328,9 @@ if (camBtn && imgInput) {
 }
 
 
-/* =========================
-   18. WELCOME
-   ========================= */
+/* =========================================================
+   19. WELCOME
+   ========================================================= */
 
 if (
     chat &&
@@ -1226,8 +1338,22 @@ if (
 ) {
 
     add(
-        "FRIDAY: Systems online. How may I assist you, Boss?",
+        "J.A.R.V.I.S: Systems online. How may I assist you, Boss?",
         "ai"
     );
 
 }
+
+
+/* =========================================================
+   20. STARTUP
+   ========================================================= */
+
+console.log(
+    "J.A.R.V.I.S initialized."
+);
+
+console.log(
+    "Gemini models:",
+    MODELS
+);
